@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roberta Mazzone Photography Guide"
+  short_description: "Slow-travel photography and prompt direction"
+  default_prompt: "Use $roberta-mazzone-photography to plan a quiet, architectural slow-travel photo story with descriptive prompts."

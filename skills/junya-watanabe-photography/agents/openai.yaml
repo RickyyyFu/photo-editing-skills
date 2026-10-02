@@ -1,0 +1,4 @@
+interface:
+  display_name: "JunyaWatanabe / jungraphy_"
+  short_description: "Plan and analyze rain-soaked Tokyo night photography"
+  default_prompt: "Use $junya-watanabe-photography to plan a rain-soaked Tokyo night shoot with a clear shot list."

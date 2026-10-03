@@ -1,6 +1,8 @@
 """Build and verify independently uploadable skill ZIPs using Python 3."""
 from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
+import json
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGES = {
@@ -12,14 +14,17 @@ PACKAGES = {
 
 
 def build():
+    versions = json.loads((ROOT / 'package-versions.json').read_text(encoding='utf-8'))
     destination = ROOT / 'downloads'
     destination.mkdir(exist_ok=True)
     for name, (label, task) in PACKAGES.items():
+        version = versions[name]
+        assert re.fullmatch(r'\d+\.\d+(?:\.\d+)?', version), version
         source = ROOT / 'skills' / name
         assert (source / 'SKILL.md').is_file(), name
         files = sorted(p for p in source.rglob('*') if p.is_file())
         instruction = f'请解压技能包，读取 {name}/SKILL.md 及其要求的参考文件，按规则处理我上传的照片。任务：{task}'
-        guide = f'''# {label}：上传使用
+        guide = f'''# {label}：上传使用 · v{version}
 
 1. 将本 ZIP 和照片一起上传给支持解压、文件读取与图像生成/编辑的 Agent。
 2. 复制以下指令：
@@ -30,7 +35,15 @@ def build():
 附件不一定会安装为长期技能。安装时将整个 {name} 文件夹放到平台规定的 Skill 目录，保留相对路径。
 本包保留技能源文件、来源和许可；如含 LICENSE / SOURCE.md，使用和分享时请遵守并保留。源仓库：https://github.com/RickyyyFu/photo-editing-skills
 '''
-        archive_path = destination / f'{name}.zip'
+        archive_path = destination / f'{name}-v{version}.zip'
+        expected = {f'{name}/{path.relative_to(source).as_posix()}': path.read_bytes() for path in files}
+        expected[f'{name}/START-HERE.md'] = guide.encode('utf-8')
+        if archive_path.exists():
+            with ZipFile(archive_path) as old:
+                if set(old.namelist()) == set(expected) and all(old.read(key) == value for key, value in expected.items()):
+                    print(f'{archive_path.name}: unchanged, verified')
+                    continue
+            raise RuntimeError(f'{archive_path.name} already exists with different content; bump package-versions.json first')
         with ZipFile(archive_path, 'w', ZIP_DEFLATED) as archive:
             for path in files:
                 archive.write(path, f'{name}/{path.relative_to(source).as_posix()}')

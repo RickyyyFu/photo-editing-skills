@@ -30,10 +30,10 @@
 
 | 效果 | 下载技能包 | 适合的任务 |
 | --- | --- | --- |
-| 实景拼贴 | [下载 ZIP](downloads/scenes-gathered-zine-v1-3.zip?raw=true) | 保留真实照片，结合插画与手撕纸边缘制作海报 |
-| 影像蒸馏 | [下载 ZIP](downloads/scene-distillation-zine-v1-3.zip?raw=true) | 把照片重新创作为原创插画海报 |
-| 自然光旅行摄影 | [下载 ZIP](downloads/roberta-mazzone-photography.zip?raw=true) | 自然光旅行照片的分析、修图与拍摄指导 |
-| 雨夜城市摄影 | [下载 ZIP](downloads/junya-watanabe-photography.zip?raw=true) | 雨夜街景、人工光与反射的分析、修图与创作指导 |
+| 实景拼贴 | [下载 ZIP](downloads/scenes-gathered-zine-v1-3-v1.3.zip?raw=true) | 保留真实照片，结合插画与手撕纸边缘制作海报 |
+| 影像蒸馏 | [下载 ZIP](downloads/scene-distillation-zine-v1-3-v1.3.zip?raw=true) | 把照片重新创作为原创插画海报 |
+| 自然光旅行摄影 | [下载 ZIP](downloads/roberta-mazzone-photography-v1.0.0.zip?raw=true) | 自然光旅行照片的分析、修图与拍摄指导 |
+| 雨夜城市摄影 | [下载 ZIP](downloads/junya-watanabe-photography-v1.0.0.zip?raw=true) | 雨夜街景、人工光与反射的分析、修图与创作指导 |
 
 1. 下载想用的技能 ZIP，每次任务通常选择一个。
 2. 将 ZIP 和照片一起上传给支持解压和读取文件的 Agent。
@@ -287,4 +287,11 @@ Junya Watanabe 摄影指导针对东京摄影师 `@jungraphy_`，而非同名时
 
 ## 维护下载包
 
-技能内容更新后，从仓库根目录运行 `python scripts/package_skills.py`，重新生成 `downloads/` 下的四个 ZIP。脚本会检查压缩包完整性，并逐文件核对技能源文件；发布修改时同步提交下载包。
+`downloads/` 保存带版本号的独立技能包，版本由 `package-versions.json` 管理。两个纸刊技能沿用上游 v1.3；两个摄影指导技能从打包版本 v1.0.0 开始，此版本只标识本仓库的分发包，不代表摄影师官方版本。技能源文件保持不变。
+
+1. 更新技能或随包说明后，必须递增对应的 `package-versions.json` 版本；第三方技能保留上游版本和来源记录，本地分发修订使用新的补丁版本。
+2. 更新本 README 的 ZIP 下载链接及对应版本说明。
+3. 从仓库根目录运行 `python scripts/package_skills.py`，重新打包新的版本 ZIP。脚本保留参考文件、配置、许可证和来源，逐文件核对压缩包。
+4. 将新 ZIP、版本清单、技能变更和文档一起提交，发布前检查下载链接与解压后的内容。
+
+已发布的版本包不得用不同内容覆盖；脚本遇到同名但内容不同的 ZIP 会报错，要求先升版本。历史版本保留。此前无版本文件名的 ZIP 作为旧下载链接保留，不再更新，新下载统一使用版本文件名。不得打包私人照片、生成结果、密钥或账号信息。

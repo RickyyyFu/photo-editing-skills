@@ -4,7 +4,7 @@
 
 当前收录四个技能，覆盖纸刊海报、原创插画、自然光旅行摄影与雨夜城市摄影。它们提供创作流程与提示词规则，实际出图需要当前 Codex 环境具备图像生成能力。
 
-**快速开始：下载下面的单技能 ZIP，把压缩包和照片一起上传给 Agent，再复制启动指令。无需 Git，也无需记住技能调用名称。**
+**快速开始：下载下面的单技能 ZIP，把压缩包和照片一起上传给 Agent，再复制启动指令。此方式要求 Agent 能解压并读取包内文件；直接出图还需要图像工具。**
 
 已安装技能的 Codex 用户仍可直接上传照片并使用 `$技能名` 调用。
 
@@ -24,7 +24,7 @@
 - 想做自然光、建筑框景、温暖克制的旅行生活摄影：选 **Roberta Mazzone 摄影指导**。
 - 想分析或创作雨夜城市、招牌光线、路面与玻璃反射：选 **Junya Watanabe 摄影指导**。
 
-实景拼贴默认竖版 `3:5`，带一条安静的小字；默认小字为英文，想用中文需要明确说明。影像蒸馏默认跟随原图方向：竖图使用 `3:5`，横图使用 `5:3`，文字可自由设计，也可以要求不加文字。
+实景拼贴默认竖版 `3:5`，带一个微文字元素（双语时可为两行）；默认小字为英文，想用中文需要明确说明。影像蒸馏默认跟随原图方向：竖图使用 `3:5`，横图使用 `5:3`，文字可自由设计，也可以要求不加文字。
 
 ## 下载并上传使用（推荐，无需 Git）
 
@@ -48,7 +48,7 @@
 
 **使用条件：**直接出图需要 Agent 能调用图像生成或编辑工具；没有图像工具时，可要求输出提示词或修图方案。上传附件用于当前任务按规则执行，不一定会安装成长期可调用的技能。
 
-若 Agent 无法解压 ZIP，在本地解压后上传完整文件夹（平台支持时），或按下面的方法安装。两个摄影技能包含必读 `references/`，请保留；其他包内的配置、许可证及来源文件也应一起保留。
+若 Agent 无法解压 ZIP，在本地解压后上传完整文件夹（平台支持时），或按下面的方法安装。两个摄影技能包含必读 `references/`，请保留；若平台不能上传文件夹，可上传所需文件并让 Agent 确认均可读取。其他包内的配置、许可证及来源文件也应一起保留。
 
 全部技能也可通过 [下载完整仓库 ZIP](https://github.com/RickyyyFu/photo-editing-skills/archive/refs/heads/main.zip) 获取。解压后在 `skills/` 下选择所需技能；用于安装的是各个技能文件夹，而非整个仓库文件夹。
 
@@ -58,7 +58,7 @@
 
 ### 1. 获取仓库
 
-先安装 Git，然后在你希望存放仓库的目录运行：
+如果已经下载单技能 ZIP，可直接解压并将内层技能文件夹复制到技能目录。下面的批量复制命令仅适用于完整仓库的 `skills/` 结构。需要用 Git 获取仓库时运行：
 
 ```sh
 git clone https://github.com/RickyyyFu/photo-editing-skills.git
@@ -74,7 +74,7 @@ cd photo-editing-skills
 #### Windows：PowerShell
 
 ```powershell
-$skillsRoot = Join-Path $env:USERPROFILE '.codex\skills'
+$skillsRoot = Join-Path $env:USERPROFILE '.agents\skills'
 New-Item -ItemType Directory -Path $skillsRoot -Force | Out-Null
 
 $skillNames = @(
@@ -99,38 +99,38 @@ foreach ($name in $skillNames) {
 }
 ```
 
-默认安装位置通常是 `C:\Users\<用户名>\.codex\skills\`。
+默认安装位置通常是 `C:\Users\<用户名>\.agents\skills\`。
 
 #### macOS / Linux：终端
 
 ```sh
-mkdir -p "$HOME/.codex/skills"
+mkdir -p "$HOME/.agents/skills"
 for name in scenes-gathered-zine-v1-3 scene-distillation-zine-v1-3 roberta-mazzone-photography junya-watanabe-photography; do
   if [ ! -f "skills/$name/SKILL.md" ]; then
     printf '找不到源文件，请在仓库根目录执行：%s\n' "$name"
     break
   fi
-  if [ -e "$HOME/.codex/skills/$name" ]; then
+  if [ -e "$HOME/.agents/skills/$name" ]; then
     printf '已存在，跳过：%s\n' "$name"
   else
-    cp -R "skills/$name" "$HOME/.codex/skills/"
+    cp -R "skills/$name" "$HOME/.agents/skills/"
     printf '已安装：%s\n' "$name"
   fi
 done
 ```
 
-如果你自定义了 Codex 的技能安装目录，请替换上述目标路径。
+上面的命令采用当前官方文档中的用户级目录 `~/.agents/skills/`。旧版本或特定宿主可能使用其他目录，请以实际技能发现配置为准，不要在多个目录重复安装同名技能。参见 [OpenAI 官方技能文档](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)。
 
 ### 3. 确认安装
 
 确认每个目标目录内直接包含 `SKILL.md`，而不是多嵌套了一层同名文件夹；同时保留 `agents/openai.yaml`、许可证及来源文件。
 
-开始新一轮对话并显式调用技能。如果没有被识别，可重启 Codex 后重试。
+安装后在技能选择器中确认名称。当前官方文档说明 Codex 会自动检测技能变更；未显示时可重启后再检查。CLI/IDE 可用 `$技能名` 或 `/skills`；提供 `@` 选择器的界面可从选择器调用。下方 `$技能名` 示例需按所用界面调整。
 
 ## 如何使用
 
 1. 在 Codex 对话中上传照片，或提供本机照片的完整路径。
-2. 用 `$技能名` 点名调用，并写清楚希望保留的主体、文字语言与情绪方向。
+2. 已安装时通过技能选择器或所用界面支持的提及方式调用；使用附件时复制上面的解压指令。写清楚希望保留的主体、文字语言与情绪方向。
 3. 查看成品后继续提出具体修改，例如“留白更多”“红色面积缩小”“保留人物位置”。
 
 不确定设计细节时，可以写“其他设计根据照片决定”。希望只看方案时，明确写“只给提示词，先不要生成图片”。
@@ -144,7 +144,7 @@ done
 请直接生成成品图，并附简短创作说明。
 ```
 
-实景拼贴的小字适合简短表达：自动创作的中文通常不超过 8 个汉字，英文不超过 5 个单词。你提供的文字会按原文使用；短句更适合这个技能的画面风格。
+实景拼贴规则将微文字限制为中文不超过 8 个汉字、英文不超过 5 个单词；双语分别适用。提供较长文案时，请明确是否放宽此限制。最终图片的文字准确性需要检查，不能保证生成工具逐字还原。
 
 ### 示例二：影像蒸馏
 
@@ -223,7 +223,7 @@ $roberta-mazzone-photography
 
 **安装了却没识别到技能？**
 
-检查文件夹名称、安装位置与 `SKILL.md` 是否直接在技能目录内。再开始新对话或重启 Codex，并完整写出 `$技能名`。
+检查文件夹名称、安装位置与 `SKILL.md` 是否直接在技能目录内。在技能选择器中确认是否已发现该技能；未显示时重启后再检查。附件模式不会自动注册技能。
 
 **为什么只有文字，没有生成图片？**
 
@@ -287,10 +287,10 @@ Junya Watanabe 摄影指导针对东京摄影师 `@jungraphy_`，而非同名时
 
 ## 维护下载包
 
-`downloads/` 保存带版本号的独立技能包，版本由 `package-versions.json` 管理。两个纸刊技能沿用上游 v1.3；两个摄影指导技能从打包版本 v1.0.0 开始，此版本只标识本仓库的分发包，不代表摄影师官方版本。技能源文件保持不变。
+`downloads/` 保存带版本号的独立技能包，版本由 `package-versions.json` 管理。两个纸刊技能沿用上游 v1.3；两个摄影指导技能从打包版本 v1.0.0 开始，此版本只标识本仓库的分发包，不代表摄影师官方版本。分发包版本与技能调用名称分开管理，文件名中的版本不会改变技能调用名称。
 
-1. 更新技能或随包说明后，必须递增对应的 `package-versions.json` 版本；第三方技能保留上游版本和来源记录，本地分发修订使用新的补丁版本。
-2. 更新本 README 的 ZIP 下载链接及对应版本说明。
+1. 更新技能文件或包内 START-HERE.md 后，必须递增对应的 `package-versions.json` 版本；第三方技能保留上游版本和来源记录，本地分发修订使用新的补丁版本。
+2. 新包升版时更新本 README 的 ZIP 下载链接及版本说明。根目录 README 不在单技能 ZIP 内，仅修正此 README 且包内文件未变时，无需升版或生成重复包。
 3. 从仓库根目录运行 `python scripts/package_skills.py`，重新打包新的版本 ZIP。脚本保留参考文件、配置、许可证和来源，逐文件核对压缩包。
 4. 将新 ZIP、版本清单、技能变更和文档一起提交，发布前检查下载链接与解压后的内容。
 
